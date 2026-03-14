@@ -32,7 +32,7 @@ export const RT_LEADERS: BoardMember[] = [
   { id: 'rt3', name: 'Suparman', role: 'Ketua RT 003', image: 'https://cdn.phototourl.com/uploads/2026-03-14-05395c3a-03e1-4f58-a237-0768d08e812b.png' },
   { id: 'rt4', name: 'Ali Rachmadi', role: 'Ketua RT 004', image: 'https://cdn.phototourl.com/uploads/2026-03-14-78ce9be8-121e-40dc-89c7-7706b75d549e.png' },
   { id: 'rt5', name: 'Berlin Wahyu Hardinta', role: 'Ketua RT 005', image: 'https://cdn.phototourl.com/uploads/2026-03-14-81ef6ee7-9fce-45fb-8698-c0c61d33889c.png' },
-  { id: 'rt6', name: 'Benny Utomo', role: 'Plt Ketua RT 006', image: 'https://iili.io/qBEayLN.png' },
+  { id: 'rt6', name: 'Benny Utomo', role: 'Plt Ketua RT 006', image: 'https://cdn.phototourl.com/uploads/2026-03-14-d0014df6-588b-42db-b3d7-92883e322d9f.png' },
   { id: 'rt7', name: 'Tri Wahyudi', role: 'Ketua RT 007', image: 'https://cdn.phototourl.com/uploads/2026-03-14-7435458f-9094-4db1-a0dd-e6bed7623c07.png' },
   { id: 'rt8', name: 'Saptadi', role: 'Ketua RT 008', image: 'https://cdn.phototourl.com/uploads/2026-03-14-783936eb-f412-4c58-9908-905a2f7fd215.png' },
   { id: 'rt9', name: 'Supriadi', role: 'Ketua RT 009', image: 'https://cdn.phototourl.com/uploads/2026-03-14-a370ae4c-09c5-4ed3-9d0c-02f236c33197.png' },
