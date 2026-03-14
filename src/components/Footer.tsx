@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center overflow-hidden p-1">
-                <img src="https://iili.io/qBjaRcl.png" alt="Logo RW 015" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+                <img src="https://cdn.phototourl.com/uploads/2026-03-10-04f17100-3512-43d7-af50-c2f041f40d55.png" alt="Logo RW 015" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
               </div>
               <span className="text-xl font-bold text-white">RW. 015 Pesona Gading Cibitung</span>
             </div>
