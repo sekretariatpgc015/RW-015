@@ -109,7 +109,7 @@ export const fetchDemographicData = async (): Promise<DemographicStats | null> =
             
             const rt = rtRaw.padStart(3, '0');
             const jiwa = parseInt(row['JML PENDUDUK']) || 0;
-            const kk = (parseInt(row['JUMLAH KK']) || 0) + (parseInt(row['JUMLAH KK2']) || 0);
+            const kk = parseInt(row['JUMLAH KK']) || 0;
             const male = parseInt(row['LAKI-LAKI']) || 0;
             const female = parseInt(row['PEREMPUAN']) || 0;
 
