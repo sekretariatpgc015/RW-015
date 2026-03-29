@@ -25,7 +25,7 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           <Link to="/" className="flex items-center gap-2 group">
             <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-blue-200 shadow-lg group-hover:scale-105 transition-transform overflow-hidden p-1">
-              <img src="https://cdn.phototourl.com/uploads/2026-03-10-04f17100-3512-43d7-af50-c2f041f40d55.png" alt="Logo RW 015" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
+              <img src="https://cdn.phototourl.com/member/2026-03-29-34b1efb2-3ee8-40c8-816d-54bed75eee00.png" alt="Logo RW 015" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-gray-900 leading-tight">RW. 015</span>

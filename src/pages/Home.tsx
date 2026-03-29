@@ -63,7 +63,7 @@ export default function Home() {
             className="flex flex-col items-center mb-10"
           >
             <motion.img 
-              src="https://cdn.phototourl.com/uploads/2026-03-10-04f17100-3512-43d7-af50-c2f041f40d55.png" 
+              src="https://cdn.phototourl.com/member/2026-03-29-34b1efb2-3ee8-40c8-816d-54bed75eee00.png" 
               alt="Logo RW 015" 
               className="w-40 h-40 sm:w-64 sm:h-64 object-contain drop-shadow-2xl mb-2 cursor-pointer"
               referrerPolicy="no-referrer"
