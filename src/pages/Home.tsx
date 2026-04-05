@@ -28,7 +28,7 @@ export default function Home() {
     '005': 'https://cdn.phototourl.com/uploads/2026-03-13-ae434279-a029-4eb9-8e87-03cf283c473d.png',
     '006': 'https://cdn.phototourl.com/uploads/2026-03-13-3ddda754-b604-429a-b79e-08197fef5d2b.png',
     '007': 'https://cdn.phototourl.com/uploads/2026-03-13-ce7c2601-9fce-42a5-8205-8ad644c2b02a.png',
-    '008': 'https://cdn.phototourl.com/uploads/2026-03-13-1bb55937-5cad-4196-bdd2-6887be78e143.png',
+    '008': 'https://cdn.phototourl.com/free/2026-04-05-e7288f37-e768-400d-9ee2-ad0af6e59468.png',
     '009': 'https://cdn.phototourl.com/uploads/2026-03-13-8427ff87-cba5-4f52-bcb2-cb2396527cd7.png',
   };
 
