@@ -11,6 +11,7 @@ export interface NewsItem {
   date: string;
   excerpt: string;
   image?: string;
+  images?: string[];
 }
 
 export interface DemographicData {

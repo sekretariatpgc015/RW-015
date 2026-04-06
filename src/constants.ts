@@ -40,6 +40,23 @@ export const RT_LEADERS: BoardMember[] = [
 
 export const NEWS: NewsItem[] = [
   {
+    id: 'halal-bihalal-1447',
+    title: 'Halal bi Halal 1447 H',
+    date: '2026-04-05',
+    excerpt: 'Langkah baru, Hari Baru, Silaturahmi tetap Nomor Satu',
+    images: [
+      'https://cdn.phototourl.com/member/2026-04-06-3852c881-2854-458d-a47e-11aaa1a6e615.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-f0ebc779-df0c-4d88-be57-264a89e99cbb.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-46a8a033-59b5-44b8-b648-e0bedafa750e.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-2310d878-bda5-43b4-861d-c823d250cfa2.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-15d017b1-20fb-489e-89aa-41bb27c0840f.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-92e7e2b7-93ff-4ee3-a9a1-a1fd8636d729.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-a985fadc-7028-4605-85dc-00d64fc958f5.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-e81cbe34-dff5-4cab-9a37-a74c55ef6d52.jpg',
+      'https://cdn.phototourl.com/member/2026-04-06-f8f6ca80-5271-4a0f-b228-32748848609a.jpg'
+    ]
+  },
+  {
     id: '1',
     title: 'Kerja Bakti Massal Minggu Ini',
     date: '2026-03-05',
@@ -52,13 +69,6 @@ export const NEWS: NewsItem[] = [
     date: '2026-03-10',
     excerpt: 'Kegiatan posyandu lansia akan dilaksanakan di balai warga RW 015 pada pukul 09.00 WIB...',
     image: 'https://picsum.photos/seed/health/800/400'
-  },
-  {
-    id: '3',
-    title: 'Pembangunan Taman Bermain Baru',
-    date: '2026-02-28',
-    excerpt: 'Proses pembangunan taman bermain di area RT 04 telah mencapai 80% dan segera diresmikan...',
-    image: 'https://picsum.photos/seed/park/800/400'
   },
 ];
 
