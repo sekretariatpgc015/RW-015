@@ -21,13 +21,27 @@ type Comment = {
 };
 
 const CommentSection = () => {
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<Comment[]>(() => {
+    const saved = localStorage.getItem('rw015_comments');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  });
   const [name, setName] = useState('');
   const [text, setText] = useState('');
 
   const [replyingTo, setReplyingTo] = useState<number | null>(null);
   const [replyName, setReplyName] = useState('');
   const [replyText, setReplyText] = useState('');
+
+  useEffect(() => {
+    localStorage.setItem('rw015_comments', JSON.stringify(comments));
+  }, [comments]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
