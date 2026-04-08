@@ -40,8 +40,8 @@ export default function Navbar() {
     <>
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link to="/" className="flex items-center gap-2 group">
+          <div className="flex justify-between h-20 items-center">
+            <Link to="/" className="flex items-center gap-2 group ml-2 sm:ml-4">
               <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-blue-200 shadow-lg group-hover:scale-105 transition-transform overflow-hidden p-1">
                 <img src="https://cdn.phototourl.com/member/2026-03-29-34b1efb2-3ee8-40c8-816d-54bed75eee00.png" alt="Logo RW 015" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
               </div>

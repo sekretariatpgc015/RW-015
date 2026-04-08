@@ -1,0 +1,106 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: comments
+    // Document ID: [auto-generated]
+    // Fields:
+    //   - userId: string (required, immutable) - The UID of the user who created the comment
+    //   - name: string (required) - The display name of the user
+    //   - text: string (required) - The content of the comment
+    //   - date: string (required) - The date the comment was created (YYYY-MM-DD)
+    //   - createdAt: string (required, immutable) - The ISO timestamp when the comment was created
+    //   - replies: list (required) - A list of replies to this comment
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+    
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+    
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+    
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}$");
+    }
+
+    function isValidDateTimeString(dateStr) {
+      return dateStr is string &&
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.*Z?$");
+    }
+
+    function areAllRepliesValid(repliesList) {
+      return repliesList is list && repliesList.size() <= 100;
+    }
+
+    function isValidComment(data) {
+      return hasRequiredFields(['userId', 'name', 'text', 'date', 'createdAt', 'replies']) &&
+             hasOnlyAllowedFields(['userId', 'name', 'text', 'date', 'createdAt', 'replies']) &&
+             data.userId is string && data.userId == request.auth.uid &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.text is string && data.text.size() > 0 && data.text.size() <= 2000 &&
+             isValidDateString(data.date) &&
+             isValidDateTimeString(data.createdAt) &&
+             areAllRepliesValid(data.replies);
+    }
+
+    function isValidCommentUpdate(data) {
+      return hasRequiredFields(['userId', 'name', 'text', 'date', 'createdAt', 'replies']) &&
+             hasOnlyAllowedFields(['userId', 'name', 'text', 'date', 'createdAt', 'replies']) &&
+             data.userId is string &&
+             data.name is string && data.name.size() > 0 && data.name.size() <= 100 &&
+             data.text is string && data.text.size() > 0 && data.text.size() <= 2000 &&
+             isValidDateString(data.date) &&
+             isValidDateTimeString(data.createdAt) &&
+             areAllRepliesValid(data.replies);
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /comments/{commentId} {
+      // Only authenticated users can read comments
+      allow read: if isAuthenticated();
+      
+      // Only authenticated users can create comments, and they must own them
+      allow create: if isAuthenticated() && isValidComment(request.resource.data);
+      
+      // Only the owner can update their comment (e.g., to edit text)
+      // OR anyone authenticated can add a reply (since replies are in the same document)
+      allow update: if isAuthenticated() && isValidCommentUpdate(request.resource.data) &&
+                    (
+                      // Owner can update anything (except immutable fields)
+                      (isOwner(resource.data.userId) && areImmutableFieldsUnchanged(['userId', 'createdAt'])) ||
+                      // Non-owners can ONLY update the `replies` array
+                      (!isOwner(resource.data.userId) && areImmutableFieldsUnchanged(['userId', 'name', 'text', 'date', 'createdAt']))
+                    );
+                    
+      // Only owner can delete
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}

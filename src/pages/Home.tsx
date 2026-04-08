@@ -1,86 +1,178 @@
-import { ArrowRight, Info, Shield, Users, Calendar, MapPin, ChevronLeft, ChevronRight, MessageSquare, Send, User, MessageCircle } from 'lucide-react';
+import { ArrowRight, Info, Shield, Users, Calendar, MapPin, ChevronLeft, ChevronRight, MessageSquare, Send, User, MessageCircle, LogIn, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { NEWS } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 import { fetchRTDistribution, RTDistribution } from '../services/dataService';
+import { db, auth } from '../firebase';
+import { collection, addDoc, onSnapshot, query, orderBy, updateDoc, doc } from 'firebase/firestore';
+import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, User as FirebaseUser } from 'firebase/auth';
 
 type Reply = {
   id: number;
+  userId: string;
   name: string;
   text: string;
   date: string;
 };
 
 type Comment = {
-  id: number;
+  id: string;
+  userId: string;
   name: string;
   text: string;
   date: string;
+  createdAt: string;
   replies?: Reply[];
 };
 
-const CommentSection = () => {
-  const [comments, setComments] = useState<Comment[]>(() => {
-    const saved = localStorage.getItem('rw015_comments');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        return [];
-      }
-    }
-    return [];
-  });
-  const [name, setName] = useState('');
-  const [text, setText] = useState('');
+enum OperationType {
+  CREATE = 'create',
+  UPDATE = 'update',
+  DELETE = 'delete',
+  LIST = 'list',
+  GET = 'get',
+  WRITE = 'write',
+}
 
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
-  const [replyName, setReplyName] = useState('');
+interface FirestoreErrorInfo {
+  error: string;
+  operationType: OperationType;
+  path: string | null;
+  authInfo: {
+    userId?: string;
+    email?: string | null;
+    emailVerified?: boolean;
+    isAnonymous?: boolean;
+    tenantId?: string | null;
+    providerInfo?: any[];
+  }
+}
+
+function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errInfo: FirestoreErrorInfo = {
+    error: error instanceof Error ? error.message : String(error),
+    authInfo: {
+      userId: auth.currentUser?.uid,
+      email: auth.currentUser?.email,
+      emailVerified: auth.currentUser?.emailVerified,
+      isAnonymous: auth.currentUser?.isAnonymous,
+      tenantId: auth.currentUser?.tenantId,
+      providerInfo: auth.currentUser?.providerData.map(provider => ({
+        providerId: provider.providerId,
+        displayName: provider.displayName,
+        email: provider.email,
+        photoUrl: provider.photoURL
+      })) || []
+    },
+    operationType,
+    path
+  }
+  console.error('Firestore Error: ', JSON.stringify(errInfo));
+  throw new Error(JSON.stringify(errInfo));
+}
+
+const CommentSection = () => {
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [text, setText] = useState('');
+  const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [replyText, setReplyText] = useState('');
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem('rw015_comments', JSON.stringify(comments));
-  }, [comments]);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setIsAuthReady(true);
+    });
+    return () => unsubscribe();
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!isAuthReady || !user) {
+      setComments([]);
+      return;
+    }
+
+    const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const commentsData: Comment[] = [];
+      snapshot.forEach((doc) => {
+        commentsData.push({ id: doc.id, ...doc.data() } as Comment);
+      });
+      setComments(commentsData);
+    }, (error) => {
+      handleFirestoreError(error, OperationType.LIST, 'comments');
+    });
+
+    return () => unsubscribe();
+  }, [isAuthReady, user]);
+
+  const handleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error("Error signing in", error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out", error);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !text.trim()) return;
+    if (!text.trim() || !user) return;
     
-    const newComment: Comment = {
-      id: Date.now(),
-      name,
+    const newComment = {
+      userId: user.uid,
+      name: user.displayName || 'Anonim',
       text,
       date: new Date().toISOString().split('T')[0],
+      createdAt: new Date().toISOString(),
       replies: []
     };
     
-    setComments([newComment, ...comments]);
-    setName('');
     setText('');
+    try {
+      await addDoc(collection(db, 'comments'), newComment);
+    } catch (error) {
+      handleFirestoreError(error, OperationType.CREATE, 'comments');
+    }
   };
 
-  const handleReplySubmit = (commentId: number, e: React.FormEvent) => {
+  const handleReplySubmit = async (commentId: string, e: React.FormEvent) => {
     e.preventDefault();
-    if (!replyName.trim() || !replyText.trim()) return;
+    if (!replyText.trim() || !user) return;
 
-    const newReply: Reply = {
-      id: Date.now(),
-      name: replyName,
-      text: replyText,
-      date: new Date().toISOString().split('T')[0]
-    };
+    const commentRef = doc(db, 'comments', commentId);
+    const commentToReply = comments.find(c => c.id === commentId);
+    
+    if (commentToReply) {
+      const newReply: Reply = {
+        id: Date.now(),
+        userId: user.uid,
+        name: user.displayName || 'Anonim',
+        text: replyText,
+        date: new Date().toISOString().split('T')[0]
+      };
 
-    setComments(comments.map(comment => {
-      if (comment.id === commentId) {
-        return { ...comment, replies: [...(comment.replies || []), newReply] };
+      const updatedReplies = [...(commentToReply.replies || []), newReply];
+      
+      setReplyingTo(null);
+      setReplyText('');
+
+      try {
+        await updateDoc(commentRef, { replies: updatedReplies });
+      } catch (error) {
+        handleFirestoreError(error, OperationType.UPDATE, `comments/${commentId}`);
       }
-      return comment;
-    }));
-
-    setReplyingTo(null);
-    setReplyName('');
-    setReplyText('');
+    }
   };
 
   return (
@@ -95,139 +187,157 @@ const CommentSection = () => {
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 mb-12">
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Nama</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
-                placeholder="Masukkan nama Anda"
-                required
-              />
+          {!user ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600 mb-6">Silakan masuk dengan akun Google Anda untuk meninggalkan komentar.</p>
+              <button
+                onClick={handleLogin}
+                className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors inline-flex items-center gap-2"
+              >
+                <LogIn size={18} />
+                Masuk dengan Google
+              </button>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Komentar</label>
-              <textarea
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                rows={4}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
-                placeholder="Tulis komentar atau saran Anda di sini..."
-                required
-              ></textarea>
-            </div>
-            <button
-              type="submit"
-              className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-            >
-              <Send size={18} />
-              Kirim Komentar
-            </button>
-          </form>
-        </div>
-
-        <div className="space-y-6">
-          <h3 className="text-xl font-bold text-gray-900 mb-6">Komentar Terbaru ({comments.length})</h3>
-          {comments.map((comment) => (
-            <div key={comment.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                  <User size={24} />
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt="Profile" className="w-10 h-10 rounded-full" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                      <User size={20} />
+                    </div>
+                  )}
+                  <div>
+                    <p className="font-bold text-gray-900">{user.displayName}</p>
+                    <p className="text-xs text-gray-500">{user.email}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="font-bold text-gray-900">{comment.name}</h4>
-                  <p className="text-sm text-gray-500">
-                    {new Date(comment.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                  </p>
-                </div>
-              </div>
-              <p className="text-gray-700 leading-relaxed">{comment.text}</p>
-              
-              <div className="mt-4">
-                <button 
-                  onClick={() => {
-                    setReplyingTo(replyingTo === comment.id ? null : comment.id);
-                    setReplyName('');
-                    setReplyText('');
-                  }}
-                  className="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center gap-1 transition-colors"
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="text-sm text-red-600 hover:text-red-700 flex items-center gap-1 font-medium"
                 >
-                  <MessageCircle size={16} />
-                  Balas
+                  <LogOut size={16} />
+                  Keluar
                 </button>
               </div>
-
-              {/* Reply Form */}
-              <AnimatePresence>
-                {replyingTo === comment.id && (
-                  <motion.form 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    onSubmit={(e) => handleReplySubmit(comment.id, e)} 
-                    className="mt-4 pl-6 md:pl-12 space-y-4 overflow-hidden"
-                  >
-                    <input
-                      type="text"
-                      value={replyName}
-                      onChange={(e) => setReplyName(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-sm"
-                      placeholder="Nama Anda"
-                      required
-                    />
-                    <textarea
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      rows={2}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none text-sm"
-                      placeholder="Tulis balasan Anda..."
-                      required
-                    ></textarea>
-                    <div className="flex gap-2">
-                      <button
-                        type="submit"
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors"
-                      >
-                        Kirim Balasan
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setReplyingTo(null)}
-                        className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors"
-                      >
-                        Batal
-                      </button>
-                    </div>
-                  </motion.form>
-                )}
-              </AnimatePresence>
-
-              {/* Replies List */}
-              {comment.replies && comment.replies.length > 0 && (
-                <div className="mt-6 pl-6 md:pl-12 space-y-4 border-l-2 border-gray-100">
-                  {comment.replies.map(reply => (
-                    <div key={reply.id} className="bg-gray-50 p-4 rounded-2xl">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
-                          <User size={16} />
-                        </div>
-                        <div>
-                          <h5 className="font-bold text-gray-900 text-sm">{reply.name}</h5>
-                          <p className="text-xs text-gray-500">
-                            {new Date(reply.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
-                          </p>
-                        </div>
-                      </div>
-                      <p className="text-gray-700 text-sm leading-relaxed">{reply.text}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          ))}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Komentar</label>
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  rows={4}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none"
+                  placeholder="Tulis komentar atau saran Anda di sini..."
+                  required
+                ></textarea>
+              </div>
+              <button
+                type="submit"
+                className="w-full sm:w-auto px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <Send size={18} />
+                Kirim Komentar
+              </button>
+            </form>
+          )}
         </div>
+
+        {user && (
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-gray-900 mb-6">Komentar Terbaru ({comments.length})</h3>
+            {comments.map((comment) => (
+              <div key={comment.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                    <User size={24} />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-gray-900">{comment.name}</h4>
+                    <p className="text-sm text-gray-500">
+                      {new Date(comment.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-700 leading-relaxed">{comment.text}</p>
+                
+                <div className="mt-4">
+                  <button 
+                    onClick={() => {
+                      setReplyingTo(replyingTo === comment.id ? null : comment.id);
+                      setReplyText('');
+                    }}
+                    className="text-sm text-blue-600 font-medium hover:text-blue-700 flex items-center gap-1 transition-colors"
+                  >
+                    <MessageCircle size={16} />
+                    Balas
+                  </button>
+                </div>
+
+                {/* Reply Form */}
+                <AnimatePresence>
+                  {replyingTo === comment.id && (
+                    <motion.form 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      onSubmit={(e) => handleReplySubmit(comment.id, e)} 
+                      className="mt-4 pl-6 md:pl-12 space-y-4 overflow-hidden"
+                    >
+                      <textarea
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                        rows={2}
+                        className="w-full px-4 py-2 rounded-lg border border-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none text-sm"
+                        placeholder="Tulis balasan Anda..."
+                        required
+                      ></textarea>
+                      <div className="flex gap-2">
+                        <button
+                          type="submit"
+                          className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors"
+                        >
+                          Kirim Balasan
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setReplyingTo(null)}
+                          className="px-4 py-2 bg-gray-100 text-gray-600 rounded-lg text-sm font-bold hover:bg-gray-200 transition-colors"
+                        >
+                          Batal
+                        </button>
+                      </div>
+                    </motion.form>
+                  )}
+                </AnimatePresence>
+
+                {/* Replies List */}
+                {comment.replies && comment.replies.length > 0 && (
+                  <div className="mt-6 pl-6 md:pl-12 space-y-4 border-l-2 border-gray-100">
+                    {comment.replies.map(reply => (
+                      <div key={reply.id} className="bg-gray-50 p-4 rounded-2xl">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600">
+                            <User size={16} />
+                          </div>
+                          <div>
+                            <h5 className="font-bold text-gray-900 text-sm">{reply.name}</h5>
+                            <p className="text-xs text-gray-500">
+                              {new Date(reply.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="text-gray-700 text-sm leading-relaxed">{reply.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );

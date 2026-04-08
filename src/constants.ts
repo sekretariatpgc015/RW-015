@@ -35,7 +35,7 @@ export const RT_LEADERS: BoardMember[] = [
   { id: 'rt6', name: 'Benny Utomo', role: 'Plt Ketua RT 006', image: 'https://cdn.phototourl.com/uploads/2026-03-14-d0014df6-588b-42db-b3d7-92883e322d9f.png' },
   { id: 'rt7', name: 'Tri Wahyudi', role: 'Ketua RT 007', image: 'https://cdn.phototourl.com/uploads/2026-03-14-7435458f-9094-4db1-a0dd-e6bed7623c07.png' },
   { id: 'rt8', name: 'Saptadi', role: 'Ketua RT 008', image: 'https://cdn.phototourl.com/uploads/2026-03-14-783936eb-f412-4c58-9908-905a2f7fd215.png' },
-  { id: 'rt9', name: 'Supriadi', role: 'Ketua RT 009', image: 'https://cdn.phototourl.com/uploads/2026-03-14-a370ae4c-09c5-4ed3-9d0c-02f236c33197.png' },
+  { id: 'rt9', name: 'Bayu Hendri Priyono', role: 'Ketua RT 009', image: 'https://cdn.phototourl.com/member/2026-04-08-d8513284-b016-48b0-a64d-4c19f97c0a16.png' },
 ];
 
 export const NEWS: NewsItem[] = [
