@@ -5,70 +5,43 @@ import { motion, AnimatePresence } from 'motion/react';
 import React, { useEffect, useState } from 'react';
 import { fetchRTDistribution, RTDistribution } from '../services/dataService';
 const NewsCard: React.FC<{ item: any }> = ({ item }) => {
-  const [currentImage, setCurrentImage] = useState(0);
   const hasMultipleImages = item.images && item.images.length > 1;
   const images = item.images || [item.image];
-
-  const nextImage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setCurrentImage((prev) => (prev + 1) % images.length);
-  };
-
-  const prevImage = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setCurrentImage((prev) => (prev - 1 + images.length) % images.length);
-  };
 
   return (
     <motion.article
       whileHover={{ scale: 1.02 }}
       className="bg-white rounded-3xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-xl transition-all flex flex-col"
     >
-      <div className="h-48 overflow-hidden relative group">
-        <AnimatePresence mode="wait">
-          <motion.img
-            key={currentImage}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            src={images[currentImage]}
-            alt={item.title}
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
-        </AnimatePresence>
-        
-        {hasMultipleImages && (
-          <>
-            <button 
-              onClick={prevImage}
-              className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button 
-              onClick={nextImage}
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-black/30 hover:bg-black/50 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-            >
-              <ChevronRight size={18} />
-            </button>
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
-              {images.map((_: any, idx: number) => (
-                <div 
-                  key={idx} 
-                  className={`w-1.5 h-1.5 rounded-full transition-colors ${idx === currentImage ? 'bg-white' : 'bg-white/50'}`}
-                />
-              ))}
-            </div>
-          </>
+      <div className="relative group">
+        {hasMultipleImages ? (
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-2 px-4 pt-4 pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+            {images.map((img: string, idx: number) => (
+              <img
+                key={idx}
+                src={img}
+                alt={`${item.title} - ${idx + 1}`}
+                className="w-[85%] h-56 object-cover rounded-2xl flex-shrink-0 snap-center border border-gray-100"
+                referrerPolicy="no-referrer"
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="h-48 overflow-hidden relative">
+            <img
+              src={images[0]}
+              alt={item.title}
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
+          </div>
         )}
 
-        <div className="absolute top-4 left-4 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-bold text-blue-700 shadow-sm">
+        <div className={`absolute ${hasMultipleImages ? 'top-6 left-6' : 'top-4 left-4'} px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-bold text-blue-700 shadow-sm`}>
           {new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
         </div>
       </div>
-      <div className="p-6 flex flex-col flex-1">
+      <div className={`p-6 flex flex-col flex-1 ${hasMultipleImages ? 'pt-2' : ''}`}>
         <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{item.title}</h3>
         <p className="text-gray-600 mb-6 line-clamp-3 text-sm leading-relaxed flex-1">{item.excerpt}</p>
       </div>

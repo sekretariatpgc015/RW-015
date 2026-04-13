@@ -57,18 +57,32 @@ export const NEWS: NewsItem[] = [
     ]
   },
   {
-    id: '1',
-    title: 'Kerja Bakti Massal Minggu Ini',
-    date: '2026-03-05',
-    excerpt: 'Diharapkan seluruh warga RW 015 untuk berpartisipasi dalam kerja bakti membersihkan lingkungan...',
-    image: 'https://picsum.photos/seed/cleanup/800/400'
+    id: 'rapat-sie-keamanan',
+    title: 'Rapat Sie Keamanan',
+    date: '2026-03-07',
+    excerpt: 'Koordinasi pengamanan libur idul fitri 1447 H',
+    images: [
+      'https://cdn.phototourl.com/member/2026-04-13-2dea7316-2d2c-4d83-b417-a68a1c50ce21.jpg',
+      'https://cdn.phototourl.com/member/2026-04-13-7a9b3b07-c278-4a86-93f8-dbbd80ca51dc.jpg',
+      'https://cdn.phototourl.com/member/2026-04-13-2f2109cb-e952-466f-9248-ed07c6b1c43a.jpg',
+      'https://cdn.phototourl.com/member/2026-04-13-b2177536-d4ab-4f0a-95e7-49f777b9a544.jpg'
+    ]
   },
   {
-    id: '2',
-    title: 'Penyuluhan Kesehatan Lansia',
-    date: '2026-03-10',
-    excerpt: 'Kegiatan posyandu lansia akan dilaksanakan di balai warga RW 015 pada pukul 09.00 WIB...',
-    image: 'https://picsum.photos/seed/health/800/400'
+    id: 'perapihan-dahan',
+    title: 'Perapihan dahan & Repair Lampu',
+    date: '2026-03-03',
+    excerpt: 'Perpaihan dahan dan repair lampu penerangan jalan utama',
+    images: [
+      'https://i.ibb.co/3mH4mWZH/Whats-App-Image-2026-03-03-at-07-42-15.jpg',
+      'https://i.ibb.co/C5qg2Z2s/Whats-App-Image-2026-03-03-at-09-20-46.jpg',
+      'https://i.ibb.co/WWdYFSy2/Whats-App-Image-2026-03-03-at-10-17-13.jpg',
+      'https://i.ibb.co/5W4hmvTj/Whats-App-Image-2026-03-03-at-12-02-26.jpg',
+      'https://i.ibb.co/PZyY9fK6/Whats-App-Image-2026-03-09-at-21-42-56-1.jpg',
+      'https://i.ibb.co/jZyrCd6S/Whats-App-Image-2026-03-09-at-21-42-56.jpg',
+      'https://i.ibb.co/JRH6W8Hq/Whats-App-Image-2026-03-10-at-20-41-41.jpg',
+      'https://i.ibb.co/tPN6XnWM/Whats-App-Image-2026-03-10-at-21-21-22.jpg'
+    ]
   },
 ];
 
