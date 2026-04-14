@@ -45,15 +45,18 @@ export const NEWS: NewsItem[] = [
     date: '2026-04-05',
     excerpt: 'Langkah baru, Hari Baru, Silaturahmi tetap Nomor Satu',
     images: [
-      'https://cdn.phototourl.com/member/2026-04-06-3852c881-2854-458d-a47e-11aaa1a6e615.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-f0ebc779-df0c-4d88-be57-264a89e99cbb.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-46a8a033-59b5-44b8-b648-e0bedafa750e.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-2310d878-bda5-43b4-861d-c823d250cfa2.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-15d017b1-20fb-489e-89aa-41bb27c0840f.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-92e7e2b7-93ff-4ee3-a9a1-a1fd8636d729.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-a985fadc-7028-4605-85dc-00d64fc958f5.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-e81cbe34-dff5-4cab-9a37-a74c55ef6d52.jpg',
-      'https://cdn.phototourl.com/member/2026-04-06-f8f6ca80-5271-4a0f-b228-32748848609a.jpg'
+      'https://i.ibb.co.com/KcRGM0v9/IMG-001.jpg',
+      'https://i.ibb.co.com/39HjVX6v/IMG-002.jpg',
+      'https://i.ibb.co.com/QFVddyV4/IMG-003.jpg',
+      'https://i.ibb.co.com/s96BQ4bq/IMG-004.jpg',
+      'https://i.ibb.co.com/tw51QppC/IMG-005.jpg',
+      'https://i.ibb.co.com/4RWcTCrj/IMG-006.jpg',
+      'https://i.ibb.co.com/Dg49yQzw/IMG-007.jpg',
+      'https://i.ibb.co.com/j9SMRxz7/IMG-008.jpg',
+      'https://i.ibb.co.com/QvM5thj5/IMG-009.jpg',
+      'https://i.ibb.co.com/GfLjFCPk/IMG-010.jpg',
+      'https://i.ibb.co.com/qYrhS4zG/IMG-011.jpg',
+      'https://i.ibb.co.com/xS59qC89/IMG-012.jpg'
     ]
   },
   {
