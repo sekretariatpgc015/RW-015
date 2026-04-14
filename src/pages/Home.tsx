@@ -123,6 +123,7 @@ const CommentSection = () => {
   const [replyText, setReplyText] = useState('');
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
+  const [loginError, setLoginError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -201,11 +202,19 @@ const CommentSection = () => {
     }
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    setLoginError(null);
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider).catch(error => {
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error: any) {
       console.error("Login error:", error);
-    });
+      if (error.code === 'auth/popup-blocked' || error.code === 'auth/popup-closed-by-user') {
+        setLoginError("Pop-up diblokir oleh browser. Silakan izinkan pop-up atau buka aplikasi ini di tab baru.");
+      } else {
+        setLoginError("Gagal masuk: " + error.message + ". Coba buka aplikasi di tab baru.");
+      }
+    }
   };
 
   return (
@@ -223,6 +232,16 @@ const CommentSection = () => {
             <MessageCircle className="mx-auto text-blue-400 mb-4" size={48} />
             <h3 className="text-xl font-bold text-gray-900 mb-2">Mari Berdiskusi</h3>
             <p className="text-gray-600 mb-6">Silakan masuk dengan akun Google Anda untuk ikut berdiskusi dan memberikan komentar.</p>
+            {loginError && (
+              <div className="mb-6 p-4 bg-red-100 text-red-700 rounded-xl text-sm border border-red-200 max-w-lg mx-auto">
+                {loginError}
+                <div className="mt-3">
+                  <a href={window.location.href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-bold underline hover:text-red-800">
+                    Buka di Tab Baru <ArrowRight size={14} />
+                  </a>
+                </div>
+              </div>
+            )}
             <button
               onClick={handleLogin}
               className="px-6 py-3 bg-white text-blue-600 rounded-xl font-bold hover:bg-blue-50 transition-all shadow-sm border border-blue-100 inline-flex items-center gap-2"
