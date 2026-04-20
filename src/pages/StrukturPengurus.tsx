@@ -18,27 +18,18 @@ interface MemberCardProps {
 
 const MemberCard = ({ member, idx }: MemberCardProps) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: idx * 0.1 }}
-    whileHover={{ y: -5 }}
-    className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100 hover:shadow-xl hover:shadow-blue-900/5 transition-all group"
+    initial={{ opacity: 0, scale: 0.9 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay: idx * 0.05 }}
+    whileHover={{ scale: 1.05, y: -5 }}
+    className="w-full mx-auto rounded-2xl overflow-hidden shadow-md border-4 border-white bg-white hover:shadow-xl transition-all group flex items-center justify-center p-1"
   >
-    <div className="relative mb-6">
-      <div className="w-24 h-32 mx-auto rounded-[20px] overflow-hidden border-4 border-blue-50 group-hover:border-blue-100 transition-colors">
-        <img
-          src={member.image}
-          alt={member.name}
-          className="w-full h-full object-cover transition-all duration-500"
-          referrerPolicy="no-referrer"
-        />
-      </div>
-    </div>
-
-    <div className="text-center">
-      <h3 className="text-lg font-bold text-gray-900 mb-0.5">{member.name}</h3>
-      <p className="text-blue-600 font-semibold text-xs">{member.role}</p>
-    </div>
+    <img
+      src={member.image}
+      alt={member.name}
+      className="w-full h-auto object-contain transition-all duration-500 group-hover:scale-[1.03]"
+      referrerPolicy="no-referrer"
+    />
   </motion.div>
 );
 
@@ -110,52 +101,52 @@ export default function StrukturPengurus() {
           </div>
 
           {/* Row 1: Ketua */}
-          <div className="flex justify-center mb-10">
-            <div className="w-full max-w-sm">
+          <div className="flex justify-center mb-8">
+            <div className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(20%-1.6rem)] max-w-sm">
               <MemberCard member={BOARD_MEMBERS[0]} idx={0} />
             </div>
           </div>
 
           {/* Row 2: Bendahara, Sekretaris & Sekretariat (All in one row) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
             {BOARD_MEMBERS.slice(1, 5).map((member, idx) => (
-              <div key={member.id} className="w-full max-w-sm mx-auto">
+              <div key={member.id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(20%-1.6rem)] max-w-sm">
                 <MemberCard member={member} idx={idx + 1} />
               </div>
             ))}
           </div>
 
           {/* Row 3: Humas & Rohani (All in one row) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
             {BOARD_MEMBERS.slice(5, 9).map((member, idx) => (
-              <div key={member.id} className="w-full max-w-sm mx-auto">
+              <div key={member.id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(20%-1.6rem)] max-w-sm">
                 <MemberCard member={member} idx={idx + 5} />
               </div>
             ))}
           </div>
 
           {/* Row 4: Pemuda & Olah Raga & Pemberdayaan Masyarakat (All in one row) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
             {BOARD_MEMBERS.slice(9, 13).map((member, idx) => (
-              <div key={member.id} className="w-full max-w-sm mx-auto">
+              <div key={member.id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(20%-1.6rem)] max-w-sm">
                 <MemberCard member={member} idx={idx + 9} />
               </div>
             ))}
           </div>
 
           {/* Row 5: Perlengkapan & Keamanan (All in one row on desktop) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
+          <div className="flex flex-wrap justify-center gap-8 mb-8">
             {BOARD_MEMBERS.slice(13, 18).map((member, idx) => (
-              <div key={member.id} className="w-full max-w-sm mx-auto">
+              <div key={member.id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(20%-1.6rem)] max-w-sm">
                 <MemberCard member={member} idx={idx + 13} />
               </div>
             ))}
           </div>
 
           {/* Row 6: Sie K3 (Keindahan, Kebersihan, Ketertiban) (All in one row on desktop) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
+          <div className="flex flex-wrap justify-center gap-8">
             {BOARD_MEMBERS.slice(18, 23).map((member, idx) => (
-              <div key={member.id} className="w-full max-w-sm mx-auto">
+              <div key={member.id} className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(20%-1.6rem)] max-w-sm">
                 <MemberCard member={member} idx={idx + 18} />
               </div>
             ))}
@@ -165,8 +156,8 @@ export default function StrukturPengurus() {
         {/* RT Leaders Section */}
         <div className="mb-24">
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-              <Map size={24} />
+            <div className="w-14 h-14 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200 overflow-hidden p-2">
+              <img src="https://drive.google.com/thumbnail?id=17G7evIeHShfqn7aSm7L1mfgjlb1hStya" alt="Logo RT" className="w-full h-full object-contain" referrerPolicy="no-referrer" />
             </div>
             <h2 className="text-2xl font-bold text-gray-900">Ketua RT (001 - 009)</h2>
           </div>
