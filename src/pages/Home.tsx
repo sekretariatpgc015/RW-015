@@ -164,8 +164,52 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Vision & Mission */}
+      <section className="py-24 bg-white relative z-10 -mt-8 rounded-t-[40px] shadow-[0_-20px_40px_-20px_rgba(0,0,0,0.1)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-blue-900 rounded-[40px] p-12 text-white relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
+              <h2 className="text-3xl font-bold mb-6">Visi Kami</h2>
+              <p className="text-blue-100/80 text-lg leading-relaxed italic">
+                "Mewujudkan lingkungan RW 015 Pesona Gading Cibitung yang Tertib, Elok, Rapi, Sehat, dan Nyaman (TERSENYUM) melalui transparansi informasi dan partisipasi aktif."
+              </p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="bg-white rounded-[40px] p-12 shadow-sm border border-gray-100"
+            >
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">Misi Kami</h2>
+              <ul className="space-y-4">
+                {[
+                  'Meningkatkan pelayanan administrasi warga yang cepat dan efisien.',
+                  'Membangun komunikasi aktif antar warga melalui media digital.',
+                  'Menjaga keamanan dan ketertiban lingkungan secara kolaboratif.',
+                  'Mengelola fasilitas umum demi kenyamanan bersama.',
+                ].map((misi, idx) => (
+                  <li key={idx} className="flex items-start gap-4">
+                    <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 mt-1">
+                      <span className="text-xs font-bold">{idx + 1}</span>
+                    </div>
+                    <span className="text-gray-600 leading-relaxed">{misi}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Section */}
-      <section className="py-24 bg-white">
+      <section className="py-24 bg-gray-50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Layanan & Keunggulan</h2>

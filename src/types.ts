@@ -3,6 +3,8 @@ export interface BoardMember {
   name: string;
   role: string;
   image?: string;
+  address?: string;
+  phone?: string;
 }
 
 export interface NewsItem {
